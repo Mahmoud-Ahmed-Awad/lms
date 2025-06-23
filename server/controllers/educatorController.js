@@ -99,7 +99,7 @@ export const educatorDashboardData = async (req, res) => {
 
       students.forEach((student) => {
         enrolledStudentsData.push({
-          courseTitle: course.title,
+          courseTitle: course.courseTitle,
           student,
         });
       });

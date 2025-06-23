@@ -68,6 +68,22 @@ export const purchaseCourse = async (req, res) => {
 
     const newPurchase = await Purchase.create(purchaseData);
 
+    if (
+      courseData.coursePrice -
+        (courseData.discount * courseData.coursePrice) / 100 ===
+      0
+    ) {
+      newPurchase.status = "completed";
+      newPurchase.save();
+      courseData.enrolledStudents.push(userData);
+      await courseData.save();
+      userData.enrolledCourses.push(courseData._id);
+      userData.save();
+      return res.status(200).json({
+        success: true,
+        message: "You Have Benn Enrolled In This Course",
+      });
+    }
     // Stripe Getway Initialize
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
 

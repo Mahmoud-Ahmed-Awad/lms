@@ -26,6 +26,7 @@ const CourseDetails = () => {
     backendUrl,
     userData,
     getToken,
+    navigate,
   } = useContext(AppContext);
 
   const fetchCourseData = async () => {
@@ -64,7 +65,11 @@ const CourseDetails = () => {
 
       if (data.success) {
         const { session_url } = data;
-        window.location.replace(session_url);
+        if (session_url) {
+          window.location.replace(session_url);
+        } else {
+          navigate("/my-enrollments");
+        }
       } else {
         toast.error(data.message || "Failed to enroll in the course");
       }
@@ -239,7 +244,7 @@ const CourseDetails = () => {
               iframeClassName="w-full aspect-video"
             />
           ) : (
-            <img src={courseData.courseThumbnail} alt="" />
+            <img src={courseData.courseThumbnail} alt="" className="w-full" />
           )}
           <div className="p-5">
             <div className="flex items-center gap-2">
