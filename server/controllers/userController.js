@@ -16,13 +16,13 @@ export const getUserData = async (req, res) => {
         .json({ success: false, message: "User not found" });
     }
 
-    req.status(200).json({
+    res.status(200).json({
       success: true,
       user,
     });
   } catch (error) {
     console.error("Error fetching user data:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -38,7 +38,7 @@ export const userEnrolledCourses = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching enrolled courses:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 

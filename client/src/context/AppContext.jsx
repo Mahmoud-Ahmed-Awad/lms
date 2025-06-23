@@ -3,10 +3,14 @@ import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import { useAuth, useUser } from "@clerk/clerk-react";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
   const currency = import.meta.env.VITE_CURRENCY;
   const navigate = useNavigate();
 
@@ -14,12 +18,48 @@ export const AppContextProvider = (props) => {
   const { user } = useUser();
 
   const [allCourses, setAllCourses] = useState([]);
-  const [isEducator, setIsEducator] = useState(true);
+  const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [userData, setUserData] = useState(null);
 
   // Fetch all Courses
   const fetchAllCourses = async () => {
-    setAllCourses(dummyCourses);
+    try {
+      const { data } = await axios.get(backendUrl + "/api/course/all");
+
+      if (data.success) {
+        setAllCourses(data.courses);
+      } else {
+        toast.error(data.message || "Failed to fetch courses");
+      }
+    } catch (error) {
+      toast.error(error.message || "An error occurred while fetching courses");
+    }
+  };
+
+  // Fetch userData
+  const fetchUserData = async () => {
+    if (user.publicMetadata.role === "educator") {
+      setIsEducator(true);
+    }
+
+    try {
+      const tokan = await getToken();
+
+      const { data } = await axios.get(backendUrl + "/api/user/data", {
+        headers: { Authorization: `Bearer ${tokan}` },
+      });
+
+      if (data.success) {
+        setUserData(data.user);
+      } else {
+        toast.error(data.message || "Failed to fetch user data");
+      }
+    } catch (error) {
+      toast.error(
+        error.message || "An error occurred while fetching user data"
+      );
+    }
   };
 
   // Function to calculate average ratingof course
@@ -31,7 +71,7 @@ export const AppContextProvider = (props) => {
     course.courseRatings.forEach((rating) => {
       totalRating += rating.rating;
     });
-    return totalRating / course.courseRatings.length;
+    return Math.floor(totalRating / course.courseRatings.length);
   };
 
   // Function to Calculate Course Chapter Time
@@ -64,27 +104,39 @@ export const AppContextProvider = (props) => {
 
   // Fetch User Enrolled Courses
   const fetchUserEnrolledCourses = async () => {
-    setEnrolledCourses(dummyCourses);
+    try {
+      const token = await getToken();
+      const { data } = await axios.get(
+        backendUrl + "/api/user/enrolled-courses",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (data.success) {
+        setEnrolledCourses(data.enrolledCourses.reverse());
+      } else {
+        toast.error(data.message || "Failed to fetch enrolled courses");
+      }
+    } catch (error) {
+      toast.error(
+        error.message || "An error occurred while fetching enrolled courses"
+      );
+    }
   };
 
   useEffect(() => {
     fetchAllCourses();
-    fetchUserEnrolledCourses();
   }, [dummyCourses, dummyCourses]);
-
   const logToken = async () => {
     const token = await getToken();
-    console.log("Token:", token);
+    console.log(token);
   };
-
   useEffect(() => {
     if (user) {
+      fetchUserData();
+      fetchUserEnrolledCourses();
       logToken();
-      // if (user.publicMetadata.role === "educator") {
-      //   setIsEducator(true);
-      // } else {
-      //   setIsEducator(false);
-      // }
     }
   }, [user]);
 
@@ -100,6 +152,11 @@ export const AppContextProvider = (props) => {
     calculateNoOfLectures,
     enrolledCourses,
     fetchUserEnrolledCourses,
+    backendUrl,
+    userData,
+    setUserData,
+    getToken,
+    fetchAllCourses,
   };
 
   return (
