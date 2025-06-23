@@ -3,14 +3,40 @@ import { Link } from "react-router-dom";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Navbar = () => {
-  const { navigate, isEducator } = useContext(AppContext);
+  const { navigate, isEducator, backendUrl, setIsEducator, getToken } =
+    useContext(AppContext);
 
   const isCourseListPage = location.pathname.includes("/course-list");
 
   const { openSignIn, openSignUp } = useClerk();
   const { user } = useUser();
+
+  const becomeEducator = async () => {
+    try {
+      if (isEducator) {
+        return navigate("/educator");
+      }
+      const token = await getToken();
+      const { data } = await axios.get(
+        backendUrl + "/api/educator/update-role",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (data.success) {
+        setIsEducator(true);
+        toast.success(data.message || "You are now an educator");
+        navigate("/educator");
+      } else {
+        toast.error(data.message || "Failed to update role");
+      }
+    } catch (error) {
+      toast.error(error.message || "An error occurred while updating role");
+    }
+  };
 
   return (
     <div
@@ -28,12 +54,7 @@ const Navbar = () => {
         <div className="flex items-center gap-5">
           {user && (
             <>
-              <button
-                className="cursor-pointer"
-                onClick={() => {
-                  navigate("/educator");
-                }}
-              >
+              <button className="cursor-pointer" onClick={becomeEducator}>
                 {isEducator ? "Educator Dashboard" : "Become Educator"}
               </button>
               | <Link to="/my-enrollments">My Enrollments</Link>

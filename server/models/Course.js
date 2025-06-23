@@ -10,10 +10,6 @@ const lectureSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    lectureDescription: {
-      type: String,
-      required: true,
-    },
     lectureUrl: {
       type: String,
       required: true,

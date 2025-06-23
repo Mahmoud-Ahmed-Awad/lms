@@ -33,7 +33,7 @@ export const AppContextProvider = (props) => {
         toast.error(data.message || "Failed to fetch courses");
       }
     } catch (error) {
-      toast.error(error.message || "An error occurred while fetching courses");
+      toast.error(error.response.data.message);
     }
   };
 
@@ -56,9 +56,7 @@ export const AppContextProvider = (props) => {
         toast.error(data.message || "Failed to fetch user data");
       }
     } catch (error) {
-      toast.error(
-        error.message || "An error occurred while fetching user data"
-      );
+      toast.error(error.response.data.message);
     }
   };
 
@@ -119,24 +117,18 @@ export const AppContextProvider = (props) => {
         toast.error(data.message || "Failed to fetch enrolled courses");
       }
     } catch (error) {
-      toast.error(
-        error.message || "An error occurred while fetching enrolled courses"
-      );
+      toast.error(error.response.data.message);
     }
   };
 
   useEffect(() => {
     fetchAllCourses();
   }, [dummyCourses, dummyCourses]);
-  const logToken = async () => {
-    const token = await getToken();
-    console.log(token);
-  };
+
   useEffect(() => {
     if (user) {
       fetchUserData();
       fetchUserEnrolledCourses();
-      logToken();
     }
   }, [user]);
 

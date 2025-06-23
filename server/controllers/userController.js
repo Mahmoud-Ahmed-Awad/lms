@@ -145,7 +145,7 @@ export const updateUserCourseProgress = async (req, res) => {
 export const getUserCourseProgress = async (req, res) => {
   try {
     const userId = req.auth().userId;
-    const { courseId } = req.query;
+    const { courseId } = req.body;
     const progressData = await CourseProgress.findOne({ userId, courseId });
     res.status(200).json({
       success: true,
@@ -188,14 +188,14 @@ export const addUserRating = async (req, res) => {
       });
     }
 
-    const existsRatingIndex = course.ratings.findIndex(
+    const existsRatingIndex = course.courseRatings.findIndex(
       (rating) => rating.userId === userId
     );
 
-    if (existsRatingIndex) {
-      course.ratings[existsRatingIndex].rating = rating;
+    if (existsRatingIndex >= 0) {
+      course.courseRatings[existsRatingIndex].rating = rating;
     } else {
-      course.ratings.push({ userId, rating });
+      course.courseRatings.push({ userId, rating });
     }
     await course.save();
 

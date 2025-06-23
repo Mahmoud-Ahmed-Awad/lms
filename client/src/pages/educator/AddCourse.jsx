@@ -1,14 +1,19 @@
 import uniqid from "uniqid";
 import Quill from "quill";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { assets } from "../../assets/assets.js";
+import { AppContext } from "../../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 const AddCourse = () => {
+  const { backendUrl, getToken } = useContext(AppContext);
+
   const quilRef = useRef(null);
   const editorRef = useRef(null);
 
   const [courseTitle, setCourseTitle] = useState("");
-  const [price, setPrice] = useState(0);
+  const [coursePrice, setCoursePrice] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [image, setImage] = useState(null);
   const [chapters, setChapters] = useState([]);
@@ -19,7 +24,7 @@ const AddCourse = () => {
     lectureTitle: "",
     lectureDuration: "",
     lectureUrl: "",
-    isPreviewFree: false,
+    isFreePreview: false,
   });
 
   const handleChapter = (action, chapterId) => {
@@ -89,12 +94,50 @@ const AddCourse = () => {
       lectureTitle: "",
       lectureDuration: "",
       lectureUrl: "",
-      isPreviewFree: false,
+      isFreePreview: false,
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      if (!image) {
+        toast.error("Thumbnail Not Selected");
+      } else {
+        const courseData = {
+          courseTitle,
+          courseDescription: quilRef.current.root.innerHTML,
+          coursePrice: Number(coursePrice),
+          discount: Number(discount),
+          courseContent: chapters,
+        };
+
+        const formData = new FormData();
+        formData.append("courseData", JSON.stringify(courseData));
+        formData.append("image", image);
+
+        const token = await getToken();
+        const { data } = await axios.post(
+          backendUrl + "/api/educator/add-course",
+          formData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+
+        if (data.success) {
+          toast.success(data.message);
+          setCourseTitle("");
+          setCoursePrice(0);
+          setDiscount(0);
+          setImage(null);
+          setChapters([]);
+          quilRef.current.root.innerHTML = "";
+        } else {
+          toast.error(data.message);
+        }
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
   };
 
   useEffect(() => {
@@ -132,8 +175,8 @@ const AddCourse = () => {
             <p>Course Price</p>
             <input
               type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              value={coursePrice}
+              onChange={(e) => setCoursePrice(e.target.value)}
               placeholder="0"
               className="outline-none md:py-2.5 w-28 py-2 px-3 rounded border border-gray-500"
               required
@@ -224,7 +267,7 @@ const AddCourse = () => {
                         >
                           Link
                         </a>{" "}
-                        - {lecture.isPreviewFree ? "Free Preview" : "Paid"}
+                        - {lecture.isFreePreview ? "Free Preview" : "Paid"}
                       </span>
                       <img
                         src={assets.cross_icon}
@@ -312,11 +355,11 @@ const AddCourse = () => {
                   <input
                     type="checkbox"
                     className="mt-1 scale-125"
-                    checked={lectureDetails.isPreviewFree}
+                    checked={lectureDetails.isFreePreview}
                     onChange={(e) =>
                       setLectureDetails({
                         ...lectureDetails,
-                        isPreviewFree: e.target.checked,
+                        isFreePreview: e.target.checked,
                       })
                     }
                   />
