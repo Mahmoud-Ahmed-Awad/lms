@@ -19,6 +19,8 @@ export const clerkWebhooks = async (req, res) => {
 
     const { data, type } = req.body;
 
+    console.log(data);
+
     switch (type) {
       case "user.created": {
         const userData = {
@@ -74,7 +76,6 @@ export const stripeWebhooks = async (request, response) => {
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
   }
-  console.log(event);
 
   // Handle the event
   switch (event.type) {
