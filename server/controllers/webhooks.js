@@ -50,7 +50,7 @@ export const clerkWebhooks = async (req, res) => {
       }
       case "session.created": {
         const newSession = await Session.create({
-          sessionId: data.id,
+          _id: data.id,
           userId: data.user_id,
         });
         await newSession.save();
@@ -59,10 +59,7 @@ export const clerkWebhooks = async (req, res) => {
       }
       case "session.removed":
       case "session.ended": {
-        await Session.findOneAndDelete({
-          sessionId: data.id,
-          userId: data.user_id,
-        });
+        await Session.findByIdAndDelete(data.id);
         res.status(200).json({ success: true });
         break;
       }

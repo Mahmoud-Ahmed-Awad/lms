@@ -27,8 +27,19 @@ export const protectEducator = async (req, res, next) => {
 export const checkDevicesLimt = async (req, res, next) => {
   const { sessionId, userId } = req.auth();
   const allSessions = await Session.find({ userId });
-  // if (allSessions.length > 1) {
-  const sessionsTime = await allSessions.map((session) => session);
-  console.log(sessionsTime);
-  // }
+  if (allSessions.length > 1) {
+    const sessionsTime = await allSessions.map(
+      (session) => new Date(session.createdAt)
+    );
+    const oldestSession = await Session.findOne({
+      createdAt: Math.min.apply(null, sessionsTime),
+    });
+    if (oldestSession._id.toString() !== sessionId.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: "You Can't Login On More Than One Device",
+      });
+    }
+  }
+  next();
 };
