@@ -50,7 +50,7 @@ export const clerkWebhooks = async (req, res) => {
       case "session.created": {
         const newSession = await Session.create({
           sessionId: data.id,
-          userId: data.user_d,
+          userId: data.user_id,
         });
         await newSession.save();
         res.status(201).json({ success: true });
