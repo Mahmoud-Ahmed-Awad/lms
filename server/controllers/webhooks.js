@@ -62,7 +62,7 @@ export const clerkWebhooks = async (req, res) => {
       case "session.ended": {
         await Session.findOneAndDelete({
           sessionId: data.id,
-          userId: data.user_d,
+          userId: data.user_id,
         });
         res.status(200).json({ success: true });
         break;
