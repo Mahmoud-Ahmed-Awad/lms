@@ -7,10 +7,11 @@ import {
   updateUserCourseProgress,
   userEnrolledCourses,
 } from "../controllers/userController.js";
+import { checkDevicesLimt } from "../middlewares/authMiddleware.js";
 
 const userRouter = express.Router();
 
-userRouter.get("/data", getUserData);
+userRouter.get("/data", checkDevicesLimt, getUserData);
 userRouter.get("/enrolled-courses", userEnrolledCourses);
 userRouter.post("/purchase", purchaseCourse);
 

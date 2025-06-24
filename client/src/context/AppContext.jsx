@@ -120,8 +120,14 @@ export const AppContextProvider = (props) => {
     }
   };
 
+  const logToken = async () => {
+    const token = await getToken();
+    console.log(token);
+  };
+
   useEffect(() => {
     fetchAllCourses();
+    logToken();
   }, []);
 
   useEffect(() => {

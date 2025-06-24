@@ -1,4 +1,5 @@
 import { clerkClient } from "@clerk/express";
+import Session from "../models/Session.js";
 
 // Middleware (Protect Educator Routes)
 export const protectEducator = async (req, res, next) => {
@@ -21,4 +22,13 @@ export const protectEducator = async (req, res, next) => {
       message: "Internal server error",
     });
   }
+};
+
+export const checkDevicesLimt = async (req, res, next) => {
+  const { sessionId, userId } = req.auth();
+  const allSessions = await Session.find({ userId });
+  // if (allSessions.length > 1) {
+  const sessionsTime = await allSessions.map((session) => session);
+  console.log(sessionsTime);
+  // }
 };
