@@ -19,8 +19,6 @@ export const clerkWebhooks = async (req, res) => {
 
     const { data, type } = req.body;
 
-    console.log(data);
-
     switch (type) {
       case "user.created": {
         const userData = {
@@ -48,6 +46,22 @@ export const clerkWebhooks = async (req, res) => {
         await User.findByIdAndDelete(data.id);
         res.json({});
         break;
+      }
+      case "session.created": {
+        const newSession = await Session.create({
+          sessionId: data.id,
+          userId: data.user_d,
+        });
+        await newSession.save();
+        res.status(201).json({ success: true });
+      }
+      case "session.remove":
+      case "session.ended": {
+        await Session.findOneAndDelete({
+          sessionId: data.id,
+          userId: data.user_d,
+        });
+        res.status(200).json({ success: true });
       }
       default: {
         res.status(400).json({ success: false, message: "Unknown event type" });
