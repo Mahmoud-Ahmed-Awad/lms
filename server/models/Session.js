@@ -5,7 +5,7 @@ const sessionSchema = new mongoose.Schema(
     sessionId: { type: String, required: true },
     userId: { type: String, ref: "User", required: true },
   },
-  { _id: false, timestamps: true }
+  { timestamps: true }
 );
 
 const Session = mongoose.model("Session", sessionSchema);
