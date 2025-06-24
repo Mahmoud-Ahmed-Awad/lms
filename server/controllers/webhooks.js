@@ -56,6 +56,7 @@ export const clerkWebhooks = async (req, res) => {
         });
         await newSession.save();
         res.status(201).json({ success: true });
+        break;
       }
       case "session.removed":
       case "session.ended": {
@@ -64,6 +65,7 @@ export const clerkWebhooks = async (req, res) => {
           userId: data.user_d,
         });
         res.status(200).json({ success: true });
+        break;
       }
       default: {
         res.status(400).json({ success: false, message: "Unknown event type" });
