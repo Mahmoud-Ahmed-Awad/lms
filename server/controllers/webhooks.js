@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Purchase from "../models/Purchase.js";
 import Course from "../models/Course.js";
 import { Stripe } from "stripe";
+import Session from "../models/Session.js";
 
 // API Controller Function to Manage Clerk Users with database
 
@@ -73,6 +74,7 @@ export const stripeWebhooks = async (request, response) => {
   } catch (err) {
     response.status(400).send(`Webhook Error: ${err.message}`);
   }
+  console.log(event);
 
   // Handle the event
   switch (event.type) {
@@ -122,6 +124,9 @@ export const stripeWebhooks = async (request, response) => {
       await purchaseData.save();
 
       break;
+    }
+    case "sesssion.created": {
+      // const newSession = await Session.create({});
     }
     default: {
       console.log(`Unhandled event type ${event.type}`);

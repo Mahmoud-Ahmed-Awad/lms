@@ -57,6 +57,10 @@ export const purchaseCourse = async (req, res) => {
         .json({ success: false, message: "Data not found" });
     }
 
+    if (courseData.enrolledStudents.includes(userId)) {
+      return res(400).json({ success: false, message: "Already Enrolled" });
+    }
+
     const purchaseData = {
       courseId: courseData._id,
       userId: userData._id,
@@ -161,7 +165,7 @@ export const updateUserCourseProgress = async (req, res) => {
 export const getUserCourseProgress = async (req, res) => {
   try {
     const userId = req.auth().userId;
-    const { courseId } = req.body;
+    const { courseId } = req.params;
     const progressData = await CourseProgress.findOne({ userId, courseId });
     res.status(200).json({
       success: true,

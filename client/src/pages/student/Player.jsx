@@ -53,7 +53,7 @@ const Player = () => {
   const markLectureCompleted = async (lectureId) => {
     try {
       const token = await getToken();
-      const { data } = await axios.post(
+      const { data } = await axios.patch(
         backendUrl + "/api/user/update-course-progress",
         { courseId, lectureId },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -96,9 +96,8 @@ const Player = () => {
   const getCourseProgress = async () => {
     try {
       const token = await getToken();
-      const { data } = await axios.post(
-        backendUrl + "/api/user/get-course-progress",
-        { courseId },
+      const { data } = await axios.get(
+        backendUrl + "/api/user/get-course-progress/" + courseId,
         { headers: { Authorization: `Bearer ${token}` } }
       );
 

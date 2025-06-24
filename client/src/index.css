@@ -6,6 +6,11 @@
   font-family: Outfit;
 }
 
+.cl-internal-y44tp9,
+.cl-internal-1t1d062 {
+  display: none !important;
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
