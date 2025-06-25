@@ -33,7 +33,11 @@ export const AppContextProvider = (props) => {
         toast.error(data.message || "Failed to fetch courses");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -60,8 +64,13 @@ export const AppContextProvider = (props) => {
     } catch (error) {
       if (error.response.data.logout) {
         signOut({ redirectUrl: "/" });
+      } else {
+        if (error.response?.data?.message) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error(error.message);
+        }
       }
-      // toast.error(error.response.data.message);
     }
   };
 
@@ -122,7 +131,11 @@ export const AppContextProvider = (props) => {
         toast.error(data.message || "Failed to fetch enrolled courses");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
