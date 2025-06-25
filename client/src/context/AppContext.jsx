@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
-import { useAuth, useUser } from "@clerk/clerk-react";
+import { useAuth, useClerk, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -20,6 +20,7 @@ export const AppContextProvider = (props) => {
   const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userData, setUserData] = useState(null);
+  const { signOut } = useClerk();
 
   // Fetch all Courses
   const fetchAllCourses = async () => {
@@ -51,11 +52,16 @@ export const AppContextProvider = (props) => {
 
       if (data.success) {
         setUserData(data.user);
+      } else if (data.logout) {
+        signOut({ redirectUrl: "/" });
       } else {
         toast.error(data.message || "Failed to fetch user data");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response.data.logout) {
+        signOut({ redirectUrl: "/" });
+      }
+      // toast.error(error.response.data.message);
     }
   };
 

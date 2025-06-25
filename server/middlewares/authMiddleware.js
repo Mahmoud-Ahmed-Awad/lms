@@ -1,6 +1,6 @@
 import { clerkClient } from "@clerk/express";
 import Session from "../models/Session.js";
-import User from "../models/User.js";
+// import User from "../models/User.js";
 
 // Middleware (Protect Educator Routes)
 export const protectEducator = async (req, res, next) => {
@@ -33,15 +33,17 @@ export const checkDevicesLimt = async (req, res, next) => {
   // }
   const allSessions = await Session.find({ userId });
   if (allSessions.length > 1) {
-    const sessionsTime = await allSessions.map(
+    const sessionsTime = allSessions.map(
       (session) => new Date(session.createdAt)
     );
     const oldestSession = await Session.findOne({
       createdAt: Math.min.apply(null, sessionsTime),
     });
     if (oldestSession._id.toString() !== sessionId.toString()) {
+      // const {sginOut} = useClerk
       return res.status(400).json({
         success: false,
+        logout: true,
         message: "You Can't Login On More Than One Device",
       });
     }
