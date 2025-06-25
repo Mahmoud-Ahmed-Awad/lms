@@ -8,6 +8,7 @@ import { clerkMiddleware } from "@clerk/express";
 import connectCloudinary from "./configs/cloudinary.js";
 import courseRouter from "./routes/courseRoute.js";
 import userRouter from "./routes/userRoutes.js";
+import { checkDevicesLimt } from "./middlewares/authMiddleware.js";
 
 // Initialize Express
 const app = express();
@@ -25,6 +26,7 @@ app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
 app.use(express.json());
 app.get("/", (req, res) => res.send("API Working"));
 app.post("/clerk", clerkWebhooks);
+app.use(checkDevicesLimt);
 app.use("/api/educator", educatorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
