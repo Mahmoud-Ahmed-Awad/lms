@@ -9,6 +9,7 @@ import connectCloudinary from "./configs/cloudinary.js";
 import courseRouter from "./routes/courseRoute.js";
 import userRouter from "./routes/userRoutes.js";
 import { checkDevicesLimt } from "./middlewares/authMiddleware.js";
+import categoryRouter from "./routes/categoryRoute.js";
 
 // Initialize Express
 const app = express();
@@ -30,6 +31,7 @@ app.use(checkDevicesLimt);
 app.use("/api/educator", educatorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
+app.use("/api/category", categoryRouter);
 
 // port
 const PORT = process.env.PORT || 5000;

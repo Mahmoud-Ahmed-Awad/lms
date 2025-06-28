@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema(
       required: true,
       // unique: true,
     },
+    isEducator: {
+      type: Boolean,
+      default: false,
+    },
     imageUrl: { type: String, required: true },
     enrolledCourses: [
       {

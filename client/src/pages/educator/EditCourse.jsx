@@ -5,15 +5,31 @@ import { assets } from "../../assets/assets.js";
 import { AppContext } from "../../context/AppContext";
 import { toast } from "react-toastify";
 import axios from "axios";
-import { useUser } from "@clerk/clerk-react";
+import { useParams } from "react-router-dom";
 
-const AddCourse = () => {
-  const { backendUrl, getToken } = useContext(AppContext);
+const EditCourse = () => {
+  const { backendUrl, getToken, userData, navigate } = useContext(AppContext);
+
+  const { courseId } = useParams();
+
+  const fetchCourseData = async () => {
+    const token = await getToken();
+    const { data } = await axios.get(`${backendUrl}/api/course/${courseId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (data.success && data.courseEducator) {
+      setCourseTitle(data.courseData.courseTitle);
+      quilRef.current.root.innerHTML = data.courseData.courseDescription;
+      setChapters(data.courseData.courseContent);
+      setCoursePrice(data.courseData.coursePrice);
+      setDiscount(data.courseData.discount);
+      setImage(data.courseData.courseThumbnail);
+    }
+  };
 
   const quilRef = useRef(null);
   const editorRef = useRef(null);
-
-  const { user } = useUser();
 
   const [courseTitle, setCourseTitle] = useState("");
   const [coursePrice, setCoursePrice] = useState(0);
@@ -21,13 +37,7 @@ const AddCourse = () => {
   const [image, setImage] = useState(null);
   const [chapters, setChapters] = useState([]);
   const [showPopup, setShowPopup] = useState(false);
-  const [showAddCategoryPopup, setShowAddCategoryPopup] = useState(false);
   const [currentChapterId, setCurrentChapterId] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [categoryId, setCategoryId] = useState("");
-  const [categoryName, setCategoryName] = useState(null);
-  const [categoryDescription, setCategoryDescription] = useState(null);
-  const [categoryThumbnail, setCategoryThumbnail] = useState(null);
 
   const [lectureDetails, setLectureDetails] = useState({
     lectureTitle: "",
@@ -107,37 +117,6 @@ const AddCourse = () => {
     });
   };
 
-  const addCategory = async (e) => {
-    e.preventDefault();
-    try {
-      if (!categoryThumbnail) {
-        toast.error("Thumbnail Not Selected");
-      } else {
-        const formData = new FormData();
-
-        formData.append("image", categoryThumbnail);
-        formData.append("name", categoryName);
-        formData.append("description", categoryDescription);
-
-        const token = await getToken();
-        const { data } = await axios.post(
-          backendUrl + "/api/category/add",
-          formData,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        if (data.success) {
-          setCategories((old) => [...old, data.category]);
-          setShowAddCategoryPopup(false);
-        } else {
-          toast.error(data.message);
-        }
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -145,12 +124,12 @@ const AddCourse = () => {
         toast.error("Thumbnail Not Selected");
       } else {
         const courseData = {
+          courseId,
           courseTitle,
           courseDescription: quilRef.current.root.innerHTML,
           coursePrice: Number(coursePrice),
           discount: Number(discount),
           courseContent: chapters,
-          category: categoryId,
         };
 
         const formData = new FormData();
@@ -158,20 +137,14 @@ const AddCourse = () => {
         formData.append("image", image);
 
         const token = await getToken();
-        const { data } = await axios.post(
-          backendUrl + "/api/educator/add-course",
+        const { data } = await axios.patch(
+          backendUrl + "/api/educator/edit-course",
           formData,
           { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (data.success) {
-          toast.success(data.message);
-          setCourseTitle("");
-          setCoursePrice(0);
-          setDiscount(0);
-          setImage(null);
-          setChapters([]);
-          quilRef.current.root.innerHTML = "";
+          navigate("/educator/my-courses");
         } else {
           toast.error(data.message);
         }
@@ -188,24 +161,11 @@ const AddCourse = () => {
         theme: "snow",
       });
     }
-    fetchCategories();
   }, []);
 
-  const fetchCategories = async () => {
-    try {
-      const { data } = await axios.get(
-        backendUrl + "/api/category/all/" + user.id
-      );
-      if (data.success) {
-        setCategories(data.categories);
-        setCategoryId(data.categories[0]._id);
-      } else {
-        toast.error(data.message);
-      }
-    } catch (error) {
-      toast.error(error.response.data.message);
-    }
-  };
+  useEffect(() => {
+    fetchCourseData();
+  }, [userData]);
 
   return (
     <div className="h-screen overflow-scroll flex flex-col items-start justify-between md:p-8 md:pb-0 p-4 pt-8 pb-0">
@@ -218,6 +178,7 @@ const AddCourse = () => {
           <input
             onChange={(e) => setCourseTitle(e.target.value)}
             type="text"
+            value={courseTitle}
             placeholder="Type here"
             className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500"
             required
@@ -226,34 +187,6 @@ const AddCourse = () => {
         <div className="flex flex-col gap-1">
           <p>Course Description</p>
           <div ref={editorRef}></div>
-        </div>
-
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div className="flex flex-col gap-1 flex-2">
-            <p>Category</p>
-            <select
-              className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500"
-              // value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              defaultValue={categoryId}
-            >
-              {categories.length > 0 ? (
-                categories.map((category, index) => (
-                  <option value={category._id} key={index}>
-                    {category.name}
-                  </option>
-                ))
-              ) : (
-                <option>No Any Categories</option>
-              )}
-            </select>
-          </div>
-          <button
-            className="cursor-pointer flex text-center justify-center py-2.5 px-3 mt-[23px] bg-blue-600 text-white rounded"
-            onClick={() => setShowAddCategoryPopup(true)}
-          >
-            + Add Category
-          </button>
         </div>
 
         <div className="flex items-center justify-between flex-wrap">
@@ -287,11 +220,17 @@ const AddCourse = () => {
                 accept="image/*"
                 hidden
               />
-              <img
-                src={image ? URL.createObjectURL(image) : ""}
-                alt=""
-                className="max-h-10"
-              />
+              {image && (
+                <img
+                  src={
+                    typeof image === "string"
+                      ? image
+                      : URL.createObjectURL(image)
+                  }
+                  alt=""
+                  className="max-h-10"
+                />
+              )}
             </label>
           </div>
         </div>
@@ -386,79 +325,6 @@ const AddCourse = () => {
             + Add Chapter
           </div>
 
-          {showAddCategoryPopup && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-800/50">
-              <div className="bg-white text-gray-700 p-4 rounded relative w-full max-w-80">
-                <h2 className="text-lg font-semibold mb-4">Add Category</h2>
-
-                <div className="mb-2">
-                  <p>Category Name</p>
-                  <input
-                    type="text"
-                    className="mt-1 block w-full border rounded py-1 px-2"
-                    value={categoryName}
-                    onChange={(e) => setCategoryName(e.target.value)}
-                  />
-                </div>
-
-                <div className="mb-2">
-                  <p>Category Description</p>
-                  <textarea
-                    className="mt-1 block w-full border rounded py-1 px-2"
-                    onChange={(e) => setCategoryDescription(e.target.value)}
-                  >
-                    {categoryDescription}
-                  </textarea>
-                </div>
-
-                <div className="flex md:flex-row flex-col items-center gap-3 mb-3">
-                  <p>Category Thumbnail</p>
-                  <label
-                    htmlFor="categoryThumbnail"
-                    className="flex items-center gap-3 cursor-pointer"
-                  >
-                    <img
-                      src={assets.file_upload_icon}
-                      alt=""
-                      className="p-3 bg-blue-500 rounded"
-                    />
-                    <input
-                      type="file"
-                      id="categoryThumbnail"
-                      onChange={(e) => setCategoryThumbnail(e.target.files[0])}
-                      accept="image/*"
-                      hidden
-                    />
-                    <img
-                      src={
-                        categoryThumbnail
-                          ? URL.createObjectURL(categoryThumbnail)
-                          : ""
-                      }
-                      alt=""
-                      className="max-h-10"
-                    />
-                  </label>
-                </div>
-
-                <button
-                  type="button"
-                  className="w-full bg-blue-400 text-white px-4 py-2 rounded cursor-pointer"
-                  onClick={addCategory}
-                >
-                  Add
-                </button>
-
-                <img
-                  onClick={() => setShowAddCategoryPopup(false)}
-                  src={assets.cross_icon}
-                  alt=""
-                  className="absolute top-4 right-4 cursor-pointer w-4"
-                />
-              </div>
-            </div>
-          )}
-
           {showPopup && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800/50">
               <div className="bg-white text-gray-700 p-4 rounded relative w-full max-w-80">
@@ -546,11 +412,11 @@ const AddCourse = () => {
           type="submit"
           className="bg-black text-white w-max py-2.5 px-8 rounded my-4 cursor-pointer"
         >
-          ADD
+          EDIT
         </button>
       </form>
     </div>
   );
 };
 
-export default AddCourse;
+export default EditCourse;

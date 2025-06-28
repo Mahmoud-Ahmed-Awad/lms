@@ -139,7 +139,12 @@ const CourseDetails = () => {
 
           <p className="text-sm">
             Course by{" "}
-            <span className="text-blue-600 underline">
+            <span
+              className="text-blue-600 underline cursor-pointer"
+              onClick={() => {
+                navigate(`/educator-courses/${courseData.educator._id}`);
+              }}
+            >
               {courseData.educator.name}
             </span>
           </p>

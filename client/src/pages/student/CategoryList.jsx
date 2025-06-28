@@ -7,48 +7,51 @@ import Footer from "../../components/students/Footer";
 import { assets } from "../../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
+import CategoryCard from "../../components/students/CategoryCard";
 
-const CoursesList = () => {
-  const { navigate, allCourses, backendUrl } = useContext(AppContext);
-  const { input, category } = useParams();
-  const [courses, setCourses] = useState();
-  const [filteredCourse, setFilteredCourse] = useState([]);
+const CategoryList = () => {
+  const { navigate, backendUrl } = useContext(AppContext);
+  const { educatorId, input } = useParams();
+  const [filteredCategories, setFilteredcategories] = useState([]);
+  const [educatorData, setEducatorData] = useState({});
+  const [categories, setCategories] = useState({});
 
-  const fetchCategoryCourses = async () => {
+  const fetchCategories = async () => {
     try {
       const { data } = await axios.get(
-        backendUrl + "/api/category/" + category
+        `${backendUrl}/api/category/all/${educatorId}`
       );
       if (data.success) {
-        setCourses(data.courses);
+        setCategories(data.categories);
+        setEducatorData(data.educator);
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response?.data?.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
   useEffect(() => {
-    if (courses && courses.length > 0) {
-      const tempCourses = courses.slice();
+    if (categories && categories.length > 0) {
+      const tempCategories = categories.slice();
       input
-        ? setFilteredCourse(
-            tempCourses.filter((item) =>
+        ? setFilteredcategories(
+            tempCategories.filter((item) =>
               item.courseTitle.toLowerCase().includes(input.toLocaleLowerCase())
             )
           )
-        : setFilteredCourse(tempCourses);
+        : setFilteredcategories(tempCategories);
     }
-  }, [courses, input]);
+  }, [input, categories]);
 
   useEffect(() => {
-    if (category) {
-      fetchCategoryCourses();
-    } else {
-      setCourses(allCourses);
-    }
-  }, [allCourses, category]);
+    fetchCategories();
+  }, []);
 
   return (
     <>
@@ -56,7 +59,7 @@ const CoursesList = () => {
         <div className="flex md:flex-row flex-col gap-6 items-start justify-between w-full">
           <div>
             <h1 className="text-4xl font-semibold text-gray-800">
-              Course List
+              {educatorData.name} Category List
             </h1>
             <p className="text-gray-500">
               <span
@@ -65,7 +68,8 @@ const CoursesList = () => {
               >
                 Home
               </span>{" "}
-              / <span>Course List</span>
+              / <span>Educator List</span> /{" "}
+              <span>{educatorData ? educatorData.name : ""}</span>
             </p>
           </div>
           <SearchBar data={input} />
@@ -82,8 +86,8 @@ const CoursesList = () => {
           </div>
         )}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 my-16 gap-3 px-2 md:p-0">
-          {filteredCourse.map((course, index) => (
-            <CourseCard key={index} course={course} />
+          {filteredCategories.map((category, index) => (
+            <CategoryCard key={index} category={category} />
           ))}
         </div>
       </div>
@@ -92,4 +96,4 @@ const CoursesList = () => {
   );
 };
 
-export default CoursesList;
+export default CategoryList;

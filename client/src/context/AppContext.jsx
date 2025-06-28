@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
-import { useAuth, useClerk, useUser } from "@clerk/clerk-react";
+import { useAuth, useClerk } from "@clerk/clerk-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -14,9 +14,9 @@ export const AppContextProvider = (props) => {
   const navigate = useNavigate();
 
   const { getToken } = useAuth();
-  const { user } = useUser();
 
   const [allCourses, setAllCourses] = useState([]);
+  const [allEducators, setAllEducators] = useState([]);
   const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
   const [userData, setUserData] = useState(null);
@@ -41,12 +41,27 @@ export const AppContextProvider = (props) => {
     }
   };
 
+  // Fetch aLl Educators
+  const fetchAllEducators = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + "/api/educator/all");
+
+      if (data.success) {
+        setAllEducators(data.educators);
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
+    }
+  };
+
   // Fetch userData
   const fetchUserData = async () => {
-    if (user.publicMetadata.role === "educator") {
-      setIsEducator(true);
-    }
-
     try {
       const tokan = await getToken();
 
@@ -56,6 +71,9 @@ export const AppContextProvider = (props) => {
 
       if (data.success) {
         setUserData(data.user);
+        if (data.user.isEducator) {
+          setIsEducator(true);
+        }
       } else if (data.logout) {
         signOut({ redirectUrl: "/" });
       } else {
@@ -146,15 +164,16 @@ export const AppContextProvider = (props) => {
 
   useEffect(() => {
     fetchAllCourses();
+    fetchAllEducators();
     logToken();
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (!userData) {
       fetchUserData();
       fetchUserEnrolledCourses();
     }
-  }, [user]);
+  }, [userData]);
 
   const value = {
     currency,
@@ -173,6 +192,7 @@ export const AppContextProvider = (props) => {
     setUserData,
     getToken,
     fetchAllCourses,
+    allEducators,
   };
 
   return (

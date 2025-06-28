@@ -1,10 +1,10 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/AppContext";
-import CourseCard from "./CourseCard";
+import EducatorCard from "./EducatorCard";
 
-const CoursesSection = () => {
-  const { allCourses } = useContext(AppContext);
+const EducatorsSection = () => {
+  const { allEducators } = useContext(AppContext);
 
   return (
     <div className="py-16 md:px-40 px-8">
@@ -18,20 +18,20 @@ const CoursesSection = () => {
       </p>
 
       <div className="grid grid-cols-auto px-4 md:px-0 md:my-16 my-10 gap-4">
-        {allCourses.slice(0, 4).map((course, index) => (
-          <CourseCard key={index} course={course} />
+        {allEducators.slice(0, 4).map((educator, index) => (
+          <EducatorCard key={index} educator={educator} />
         ))}
       </div>
 
       <Link
-        to="/course-list"
+        to="/educator-list"
         onClick={() => scrollTo(0, 0)}
         className="text-gray-500 border border-gray-500/30 px-10 py-3 rounded"
       >
-        Show All Courses
+        Show All Educators
       </Link>
     </div>
   );
 };
 
-export default CoursesSection;
+export default EducatorsSection;

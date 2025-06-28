@@ -3,6 +3,7 @@ import { AppContext } from "../../context/AppContext";
 import Loading from "../../components/students/Loading";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const MyCourses = () => {
   const { currency, backendUrl, getToken } = useContext(AppContext);
@@ -35,8 +36,8 @@ const MyCourses = () => {
       <div className="w-full">
         <h2 className="pb-4 text-lg font-medium">My Courses</h2>
         <div className="flex flex-col items-center max-w-4xl w-full overflow-hidden rounded-md bg-white border border-gray-500/20">
-          <table className="md:table-auto table-fixed w-full overflow-hidden">
-            <thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
+          <table className="md:table-auto table-fixed w-full overflow-hidden text-center">
+            <thead className="text-gray-900 border-b border-gray-500/20 text-sm">
               <tr>
                 <th className="px-4 py-3 font-semibold truncate">
                   All Courses
@@ -46,6 +47,7 @@ const MyCourses = () => {
                 <th className="px-4 py-3 font-semibold truncate">
                   Published On
                 </th>
+                <th className="px-4 py-3 font-semibold truncate">Edit</th>
               </tr>
             </thead>
             <tbody>
@@ -74,6 +76,14 @@ const MyCourses = () => {
                   </td>
                   <td className="px-4 py-3">
                     {new Date(course.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <Link
+                      to={`../edit-course/${course._id}`}
+                      className="bg-blue-600 text-white w-max py-2.5 px-8 rounded my-4 cursor-pointer"
+                    >
+                      Edit
+                    </Link>
                   </td>
                 </tr>
               ))}

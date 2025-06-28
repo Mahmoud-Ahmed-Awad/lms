@@ -90,6 +90,11 @@ const courseSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    category: {
+      type: String,
+      ref: "Category",
+      required: true,
+    },
     enrolledStudents: [
       {
         type: String,

@@ -8,30 +8,36 @@ import { assets } from "../../assets/assets";
 import axios from "axios";
 import { toast } from "react-toastify";
 
-const CoursesList = () => {
-  const { navigate, allCourses, backendUrl } = useContext(AppContext);
-  const { input, category } = useParams();
-  const [courses, setCourses] = useState();
+const EducatorCourses = () => {
+  const { navigate, backendUrl } = useContext(AppContext);
+  const { educatorId, input } = useParams();
   const [filteredCourse, setFilteredCourse] = useState([]);
+  const [educatorData, setEducatorData] = useState({});
+  const [educatorCourses, setEducatorCourses] = useState([]);
 
-  const fetchCategoryCourses = async () => {
+  const fetchEducatorCourses = async () => {
     try {
       const { data } = await axios.get(
-        backendUrl + "/api/category/" + category
+        `${backendUrl}/api/course/educator/${educatorId}`
       );
       if (data.success) {
-        setCourses(data.courses);
+        setEducatorData(data.educator);
+        setEducatorCourses(data.educatorCourses);
       } else {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response?.data?.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
   useEffect(() => {
-    if (courses && courses.length > 0) {
-      const tempCourses = courses.slice();
+    if (educatorCourses && educatorCourses.length > 0) {
+      const tempCourses = educatorCourses.slice();
       input
         ? setFilteredCourse(
             tempCourses.filter((item) =>
@@ -40,15 +46,11 @@ const CoursesList = () => {
           )
         : setFilteredCourse(tempCourses);
     }
-  }, [courses, input]);
+  }, [input, educatorCourses]);
 
   useEffect(() => {
-    if (category) {
-      fetchCategoryCourses();
-    } else {
-      setCourses(allCourses);
-    }
-  }, [allCourses, category]);
+    fetchEducatorCourses();
+  }, []);
 
   return (
     <>
@@ -56,7 +58,7 @@ const CoursesList = () => {
         <div className="flex md:flex-row flex-col gap-6 items-start justify-between w-full">
           <div>
             <h1 className="text-4xl font-semibold text-gray-800">
-              Course List
+              {educatorData.name} Course List
             </h1>
             <p className="text-gray-500">
               <span
@@ -65,7 +67,8 @@ const CoursesList = () => {
               >
                 Home
               </span>{" "}
-              / <span>Course List</span>
+              / <span>Educator List</span> /{" "}
+              <span>{educatorData ? educatorData.name : ""}</span>
             </p>
           </div>
           <SearchBar data={input} />
@@ -92,4 +95,4 @@ const CoursesList = () => {
   );
 };
 
-export default CoursesList;
+export default EducatorCourses;
