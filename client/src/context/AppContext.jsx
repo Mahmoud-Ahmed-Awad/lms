@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
-import { useAuth, useClerk } from "@clerk/clerk-react";
+import { useAuth, useClerk, useUser } from "@clerk/clerk-react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -19,6 +19,7 @@ export const AppContextProvider = (props) => {
   const [allEducators, setAllEducators] = useState([]);
   const [isEducator, setIsEducator] = useState(false);
   const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const { user } = useUser();
   const [userData, setUserData] = useState(null);
   const { signOut } = useClerk();
 
@@ -157,23 +158,17 @@ export const AppContextProvider = (props) => {
     }
   };
 
-  const logToken = async () => {
-    const token = await getToken();
-    console.log(token);
-  };
-
   useEffect(() => {
     fetchAllCourses();
     fetchAllEducators();
-    logToken();
   }, []);
 
   useEffect(() => {
-    if (!userData) {
+    if (!userData && user) {
       fetchUserData();
       fetchUserEnrolledCourses();
     }
-  }, [userData]);
+  }, [userData, user]);
 
   const value = {
     currency,
