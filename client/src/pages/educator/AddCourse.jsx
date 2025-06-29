@@ -128,6 +128,7 @@ const AddCourse = () => {
 
         if (data.success) {
           setCategories((old) => [...old, data.category]);
+          setCategoryId(data.category._id);
           setShowAddCategoryPopup(false);
         } else {
           toast.error(data.message);
