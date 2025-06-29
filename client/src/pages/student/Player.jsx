@@ -66,7 +66,11 @@ const Player = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -89,7 +93,11 @@ const Player = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -107,7 +115,11 @@ const Player = () => {
         toast.error(data.message);
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -215,7 +227,11 @@ const Player = () => {
           {playerData ? (
             <div>
               <YouTube
-                videoId={playerData.lectureUrl.split("/").pop()}
+                videoId={playerData.lectureUrl
+                  .split("/")
+                  .pop()
+                  .split("?")
+                  .shift()}
                 iframeClassName="w-full aspect-video"
               />
               <div className="flex justify-between items-center mt-1">

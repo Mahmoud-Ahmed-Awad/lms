@@ -39,7 +39,11 @@ const CourseDetails = () => {
         toast.error(data.message || "Failed to fetch course data");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -74,7 +78,11 @@ const CourseDetails = () => {
         toast.error(data.message || "Failed to enroll in the course");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error(error.message);
+      }
     }
   };
 
@@ -203,7 +211,9 @@ const CourseDetails = () => {
                                     setPlayerData({
                                       videoId: lecture.lectureUrl
                                         .split("/")
-                                        .pop(),
+                                        .pop()
+                                        .split("?")
+                                        .shift(),
                                     })
                                   }
                                 >
