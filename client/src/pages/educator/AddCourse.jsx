@@ -241,7 +241,11 @@ const AddCourse = () => {
             >
               {categories.length > 0 ? (
                 categories.map((category, index) => (
-                  <option value={category._id} key={index}>
+                  <option
+                    value={category._id}
+                    key={index}
+                    selected={index == 0}
+                  >
                     {category.name}
                   </option>
                 ))
