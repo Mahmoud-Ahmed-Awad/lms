@@ -233,8 +233,10 @@ const AddCourse = () => {
             <p>Category</p>
             <select
               className="outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500"
-              // value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
+              value={categoryId}
+              onChange={(e) => {
+                setCategoryId(e.target.value);
+              }}
               defaultValue={categoryId}
             >
               {categories.length > 0 ? (
@@ -250,7 +252,10 @@ const AddCourse = () => {
           </div>
           <button
             className="cursor-pointer flex text-center justify-center py-2.5 px-3 mt-[23px] bg-blue-600 text-white rounded"
-            onClick={() => setShowAddCategoryPopup(true)}
+            onClick={(e) => {
+              e.preventDefault();
+              setShowAddCategoryPopup(true);
+            }}
           >
             + Add Category
           </button>
