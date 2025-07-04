@@ -18,7 +18,7 @@ export const AppContextProvider = (props) => {
   const [allCourses, setAllCourses] = useState([]);
   const [allEducators, setAllEducators] = useState([]);
   const [isEducator, setIsEducator] = useState(false);
-  const [enrolledCourses, setEnrolledCourses] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const { user } = useUser();
   const [userData, setUserData] = useState(null);
   const { signOut } = useClerk();
@@ -134,18 +134,15 @@ export const AppContextProvider = (props) => {
   };
 
   // Fetch User Enrolled Courses
-  const fetchUserEnrolledCourses = async () => {
+  const fetchUserEnrollments = async () => {
     try {
       const token = await getToken();
-      const { data } = await axios.get(
-        backendUrl + "/api/user/enrolled-courses",
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const { data } = await axios.get(backendUrl + "/api/user/enrollments", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (data.success) {
-        setEnrolledCourses(data.enrolledCourses.reverse());
+        setEnrollments(data.enrollments.reverse());
       } else {
         toast.error(data.message || "Failed to fetch enrolled courses");
       }
@@ -158,15 +155,21 @@ export const AppContextProvider = (props) => {
     }
   };
 
+  const logToken = async () => {
+    const token = await getToken();
+    console.log(token);
+  };
+
   useEffect(() => {
     fetchAllCourses();
     fetchAllEducators();
+    logToken();
   }, []);
 
   useEffect(() => {
     if (!userData && user) {
       fetchUserData();
-      fetchUserEnrolledCourses();
+      fetchUserEnrollments();
     }
   }, [userData, user]);
 
@@ -180,8 +183,8 @@ export const AppContextProvider = (props) => {
     calculateChapterTime,
     calculateCourseDuration,
     calculateNoOfLectures,
-    enrolledCourses,
-    fetchUserEnrolledCourses,
+    enrollments,
+    fetchUserEnrollments,
     backendUrl,
     userData,
     setUserData,

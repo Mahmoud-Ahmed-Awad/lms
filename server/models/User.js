@@ -21,10 +21,28 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     imageUrl: { type: String, required: true },
-    enrolledCourses: [
+    enrollments: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
+        type: {
+          type: {
+            type: String,
+            enum: ["course", "chapter", "lecture"],
+          },
+          part: {
+            type: {
+              course: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Course",
+              },
+              chapterId: {
+                type: String,
+              },
+              lectureId: {
+                type: String,
+              },
+            },
+          },
+        },
       },
     ],
   },

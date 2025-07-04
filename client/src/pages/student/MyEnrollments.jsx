@@ -8,11 +8,11 @@ import axios from "axios";
 
 const MyEnrollments = () => {
   const {
-    enrolledCourses,
+    enrollments,
     calculateCourseDuration,
     navigate,
     userData,
-    fetchUserEnrolledCourses,
+    fetchUserEnrollments,
     backendUrl,
     getToken,
     calculateNoOfLectures,
@@ -24,7 +24,7 @@ const MyEnrollments = () => {
     try {
       const token = await getToken();
       const tempProgressArray = await Promise.all(
-        enrolledCourses.map(async (course) => {
+        enrollments.map(async (course) => {
           const { data } = await axios.get(
             `${backendUrl}/api/user/get-course-progress/${course._id}`,
             {
@@ -54,17 +54,17 @@ const MyEnrollments = () => {
 
   useEffect(() => {
     if (userData) {
-      fetchUserEnrolledCourses();
+      fetchUserEnrollments();
     }
   }, [userData]);
 
   useEffect(() => {
-    if (enrolledCourses && enrolledCourses.length > 0) {
+    if (enrollments && enrollments.length > 0) {
       getCourseProgress();
     }
-  }, [enrolledCourses]);
+  }, [enrollments]);
 
-  return enrolledCourses ? (
+  return enrollments ? (
     <>
       <div className="md:px-36 px-8 pt-10">
         <h1 className="text-2xl font-semibold">My Enrollments</h1>
@@ -78,16 +78,18 @@ const MyEnrollments = () => {
             </tr>
           </thead>
           <tbody className="text-gray-700">
-            {enrolledCourses.map((course, index) => (
+            {enrollments.map((enrolledItem, index) => (
               <tr key={index} className="border-b border-gray-500/20">
                 <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3">
                   <img
-                    src={course.courseThumbnail}
+                    src={enrolledItem.part.course.courseThumbnail}
                     alt=""
                     className="w-14 sm:w-24 md:w-28"
                   />
                   <div className="flex-1">
-                    <p className="mb-1 max-sm:text-sm">{course.courseTitle}</p>
+                    <p className="mb-1 max-sm:text-sm">
+                      {enrolledItem.part.course.courseTitle}
+                    </p>
                     <Line
                       strokeWidth={2}
                       percent={
@@ -101,7 +103,7 @@ const MyEnrollments = () => {
                   </div>
                 </td>
                 <td className="px-4 py-3 max-sm:hidden">
-                  {calculateCourseDuration(course)}
+                  {calculateCourseDuration(enrolledItem.part.course)}
                 </td>
                 <td className="px-4 py-3 max-sm:hidden">
                   {progressArray[index] &&
@@ -111,7 +113,9 @@ const MyEnrollments = () => {
                 <td className="px-4 py-3 max-sm:text-right">
                   <button
                     className="px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 max-sm:text-xs text-white cursor-pointer"
-                    onClick={() => navigate("/player/" + course._id)}
+                    onClick={() =>
+                      navigate("/player/" + enrolledItem.part.course._id)
+                    }
                   >
                     {progressArray[index] &&
                     progressArray[index].lecturesComplated /

@@ -6,7 +6,7 @@ import Purchase from "../models/Purchase.js";
 export const getAllEducators = async (req, res) => {
   try {
     const educators = await User.find({ isEducator: true }).select([
-      "-enrolledCourses",
+      "-enrollments",
     ]);
     res.status(200).json({ success: true, educators });
   } catch (error) {

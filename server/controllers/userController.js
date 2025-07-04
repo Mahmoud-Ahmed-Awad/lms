@@ -27,17 +27,16 @@ export const getUserData = async (req, res) => {
 };
 
 // Users Enrolled Courses With Lecture Links
-export const userEnrolledCourses = async (req, res) => {
+export const userEnrollments = async (req, res) => {
   try {
     const userId = req.auth().userId;
-    const userData = await User.findById(userId).populate("enrolledCourses");
+    const userData = await User.findById(userId).populate("enrollments");
 
     res.status(200).json({
       success: true,
-      enrolledCourses: userData.enrolledCourses,
+      enrollments: userData.enrollments,
     });
   } catch (error) {
-    console.error("Error fetching enrolled courses:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -81,7 +80,7 @@ export const purchaseCourse = async (req, res) => {
       newPurchase.save();
       courseData.enrolledStudents.push(userData);
       await courseData.save();
-      userData.enrolledCourses.push(courseData._id);
+      userData.enrollments.push({ type: "course", part: { courseId } });
       userData.save();
       return res.status(200).json({
         success: true,
@@ -201,7 +200,10 @@ export const addUserRating = async (req, res) => {
 
     const user = await User.findById(userId);
 
-    if (!user || !user.enrolledCourses.includes(courseId)) {
+    if (
+      !user ||
+      !user.enrollments.includes({ type: "course", part: { courseId } })
+    ) {
       return res.status(403).json({
         success: false,
         message: "User has not purchased this course",

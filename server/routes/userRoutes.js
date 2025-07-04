@@ -5,13 +5,13 @@ import {
   getUserData,
   purchaseCourse,
   updateUserCourseProgress,
-  userEnrolledCourses,
+  userEnrollments,
 } from "../controllers/userController.js";
 
 const userRouter = express.Router();
 
 userRouter.get("/data", getUserData);
-userRouter.get("/enrolled-courses", userEnrolledCourses);
+userRouter.get("/enrollments", userEnrollments);
 userRouter.post("/purchase", purchaseCourse);
 
 userRouter.patch("/update-course-progress", updateUserCourseProgress);

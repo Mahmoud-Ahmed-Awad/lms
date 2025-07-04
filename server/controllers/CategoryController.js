@@ -7,9 +7,7 @@ import { v2 as cloudinary } from "cloudinary";
 export const getAllGategories = async (req, res) => {
   try {
     const educatorId = req.params.id;
-    const educator = await User.findById(educatorId).select([
-      "-enrolledCourses",
-    ]);
+    const educator = await User.findById(educatorId).select(["-enrollments"]);
     const categories = await Category.find({ createdBy: educatorId });
     return res.status(200).json({ success: true, educator, categories });
   } catch (error) {
