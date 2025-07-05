@@ -1,5 +1,28 @@
 import mongoose from "mongoose";
 
+const partSchema = new mongoose.Schema({
+  type: {
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+    chapterId: {
+      type: String,
+    },
+    lectureId: {
+      type: String,
+    },
+  },
+});
+
+const typeSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["course", "chapter", "lecture"],
+  },
+  part: partSchema,
+});
+
 const userSchema = new mongoose.Schema(
   {
     _id: {
@@ -21,30 +44,7 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
     imageUrl: { type: String, required: true },
-    enrollments: [
-      {
-        type: {
-          type: {
-            type: String,
-            enum: ["course", "chapter", "lecture"],
-          },
-          part: {
-            type: {
-              course: {
-                type: mongoose.Schema.Types.ObjectId,
-                ref: "Course",
-              },
-              chapterId: {
-                type: String,
-              },
-              lectureId: {
-                type: String,
-              },
-            },
-          },
-        },
-      },
-    ],
+    enrollments: [typeSchema],
   },
   { timestamps: true }
 );

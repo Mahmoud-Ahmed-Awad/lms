@@ -207,7 +207,9 @@ const AddCourse = () => {
       );
       if (data.success) {
         setCategories(data.categories);
-        setCategoryId(data.categories[0]._id);
+        if (data.categories.length > 0) {
+          setCategoryId(data.categories[0]._id);
+        }
       } else {
         toast.error(data.message);
       }

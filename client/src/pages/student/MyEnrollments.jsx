@@ -63,6 +63,7 @@ const MyEnrollments = () => {
       getCourseProgress();
     }
   }, [enrollments]);
+  console.log(enrollments);
 
   return enrollments ? (
     <>
@@ -82,13 +83,13 @@ const MyEnrollments = () => {
               <tr key={index} className="border-b border-gray-500/20">
                 <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3">
                   <img
-                    src={enrolledItem.part.course.courseThumbnail}
+                    src={enrolledItem.courseThumbnail}
                     alt=""
                     className="w-14 sm:w-24 md:w-28"
                   />
                   <div className="flex-1">
                     <p className="mb-1 max-sm:text-sm">
-                      {enrolledItem.part.course.courseTitle}
+                      {enrolledItem.courseTitle}
                     </p>
                     <Line
                       strokeWidth={2}
@@ -103,7 +104,7 @@ const MyEnrollments = () => {
                   </div>
                 </td>
                 <td className="px-4 py-3 max-sm:hidden">
-                  {calculateCourseDuration(enrolledItem.part.course)}
+                  {calculateCourseDuration(enrolledItem)}
                 </td>
                 <td className="px-4 py-3 max-sm:hidden">
                   {progressArray[index] &&
@@ -113,9 +114,7 @@ const MyEnrollments = () => {
                 <td className="px-4 py-3 max-sm:text-right">
                   <button
                     className="px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 max-sm:text-xs text-white cursor-pointer"
-                    onClick={() =>
-                      navigate("/player/" + enrolledItem.part.course._id)
-                    }
+                    onClick={() => navigate("/player/" + enrolledItem._id)}
                   >
                     {progressArray[index] &&
                     progressArray[index].lecturesComplated /
