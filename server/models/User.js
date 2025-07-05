@@ -2,17 +2,15 @@ import mongoose from "mongoose";
 
 const partSchema = new mongoose.Schema(
   {
-    type: {
-      course: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
-      },
-      chapterId: {
-        type: String,
-      },
-      lectureId: {
-        type: String,
-      },
+    course: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+    chapterId: {
+      type: String,
+    },
+    lectureId: {
+      type: String,
     },
   },
   { _id: false }

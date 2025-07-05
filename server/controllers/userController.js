@@ -57,7 +57,9 @@ export const purchaseCourse = async (req, res) => {
     }
 
     if (courseData.enrolledStudents.includes(userId)) {
-      return res(400).json({ success: false, message: "Already Enrolled" });
+      return res
+        .status(400)
+        .json({ success: false, message: "Already Enrolled" });
     }
 
     const purchaseData = {

@@ -116,7 +116,7 @@ export const stripeWebhooks = async (request, response) => {
 
         userData.enrollments.push({
           type: "course",
-          part: { course: purchaseData.courseId },
+          part: { course: courseData._id },
         });
         await userData.save();
 
