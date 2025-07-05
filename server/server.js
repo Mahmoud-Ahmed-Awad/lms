@@ -28,7 +28,7 @@ app.post("/stripe", express.raw({ type: "application/json" }), stripeWebhooks);
 app.use(express.json());
 app.get("/", (req, res) => res.send("API Working"));
 app.post("/clerk", clerkWebhooks);
-// app.use(checkDevicesLimt);
+app.use(checkDevicesLimt);
 app.use("/api/educator", educatorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
