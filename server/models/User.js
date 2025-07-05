@@ -1,27 +1,33 @@
 import mongoose from "mongoose";
 
-const partSchema = new mongoose.Schema({
-  type: {
-    course: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Course",
-    },
-    chapterId: {
-      type: String,
-    },
-    lectureId: {
-      type: String,
+const partSchema = new mongoose.Schema(
+  {
+    type: {
+      course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+      },
+      chapterId: {
+        type: String,
+      },
+      lectureId: {
+        type: String,
+      },
     },
   },
-});
+  { _id: false }
+);
 
-const typeSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: ["course", "chapter", "lecture"],
+const typeSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["course", "chapter", "lecture"],
+    },
+    part: partSchema,
   },
-  part: partSchema,
-});
+  { _id: false }
+);
 
 const userSchema = new mongoose.Schema(
   {
