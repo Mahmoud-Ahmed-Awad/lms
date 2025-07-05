@@ -12,7 +12,7 @@ import Loading from "../../components/students/Loading";
 
 const Player = () => {
   const {
-    enrolledCourses,
+    enrollments,
     calculateChapterTime,
     backendUrl,
     getToken,
@@ -28,10 +28,10 @@ const Player = () => {
   const [initialRating, setInitialRating] = useState(0);
 
   const getCourseData = () => {
-    enrolledCourses.map((course) => {
-      if (course._id === courseId) {
-        setCourseData(course);
-        course.courseRatings.map((item) => {
+    enrollments.map((enrolledItem) => {
+      if (enrolledItem.part.course._id === courseId) {
+        setCourseData(enrolledItem.part.course);
+        enrolledItem.part.course.courseRatings.map((item) => {
           if (item.userId === userData._id) {
             setInitialRating(item.rating);
           }
@@ -45,10 +45,10 @@ const Player = () => {
   };
 
   useEffect(() => {
-    if (enrolledCourses.length > 0) {
+    if (enrollments.length > 0) {
       getCourseData();
     }
-  }, [enrolledCourses]);
+  }, [enrollments]);
 
   const markLectureCompleted = async (lectureId) => {
     try {

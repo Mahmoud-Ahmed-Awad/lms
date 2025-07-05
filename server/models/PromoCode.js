@@ -12,35 +12,42 @@ const partSchma = new mongoose.Schema({
   },
 });
 
-const promoCodeSchema = new mongoose.Schema({
-  educator: {
-    type: String,
-    ref: "User",
-    required: true,
+const promoCodeSchema = new mongoose.Schema(
+  {
+    educator: {
+      type: String,
+      ref: "User",
+      required: true,
+    },
+    code: {
+      type: String,
+      required: true,
+      uniqe: true,
+    },
+    type: {
+      type: String,
+      enum: ["full", "chapter", "lecture"],
+      required: true,
+    },
+    courseId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
+    },
+    chapterId: {
+      type: String,
+    },
+
+    lectureId: {
+      type: String,
+    },
+    used: {
+      type: Boolean,
+      default: false,
+    },
   },
-  code: {
-    type: String,
-    required: true,
-    uniqe: true,
-  },
-  courseId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Course",
-    required: true,
-  },
-  type: {
-    type: String,
-    enum: ["full", "chapter", "lecture"],
-    required: true,
-  },
-  part: {
-    type: { chapterId: { type: String }, lectureId: { type: String } },
-  },
-  used: {
-    type: Boolean,
-    default: false,
-  },
-});
+  { timestamps: true }
+);
 
 const PromoCode = mongoose.model("PromoCode", promoCodeSchema);
 

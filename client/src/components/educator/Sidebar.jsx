@@ -23,6 +23,11 @@ const Sidebar = () => {
       path: "/educator/student-enrolled",
       icon: assets.person_tick_icon,
     },
+    {
+      name: "Promo Codes",
+      path: "/educator/promo-codes",
+      icon: assets.price_tag,
+    },
   ];
 
   return (
@@ -41,7 +46,7 @@ const Sidebar = () => {
               }`
             }
           >
-            <img src={item.icon} alt="" />
+            <img src={item.icon} alt="" className="w-[20px]" />
             <p className="md:block hidden text-center">{item.name}</p>
           </NavLink>
         ))}

@@ -17,6 +17,8 @@ import EditCourse from "./pages/educator/EditCourse";
 import EducatorCourses from "./pages/student/EducatorCourses";
 import EducatorsList from "./pages/student/EducatorsList";
 import CategoryList from "./pages/student/CategoryList";
+import PromoCodes from "./pages/educator/PromoCodes";
+import CreatePromoCode from "./pages/educator/CreatePromoCode";
 
 function App() {
   const isEducatorRoute = useMatch("/educator/*");
@@ -62,6 +64,8 @@ function App() {
           <Route path="my-courses" element={<MyCourses />} />
           <Route path="student-enrolled" element={<StudentsEnrolled />} />
           <Route path="edit-course/:courseId" element={<EditCourse />} />
+          <Route path="promo-codes" element={<PromoCodes />} />
+          <Route path="create-promo-code" element={<CreatePromoCode />} />
         </Route>
       </Routes>
     </div>

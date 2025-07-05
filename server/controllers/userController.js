@@ -30,7 +30,25 @@ export const getUserData = async (req, res) => {
 export const userEnrollments = async (req, res) => {
   try {
     const userId = req.auth().userId;
-    const userData = await User.findById(userId).populate("enrollments");
+    const userData = await User.findById(userId).populate(
+      "enrollments.part.course"
+    );
+
+    userData.enrollments.map((enrolledItem) => {
+      if (enrolledItem.type != "full") {
+        enrolledItem.part.course.courseContent =
+          enrolledItem.part.course.courseContent.filter(
+            (chapter) => chapter.chapterId == enrolledItem.part.chapterId
+          );
+
+        if (enrolledItem.type == "lecture") {
+          enrolledItem.part.course.courseContent[0].chapterContent =
+            enrolledItem.part.course.courseContent[0].chapterContent.filter(
+              (lecture) => lecture.lectureId == enrolledItem.part.lectureId
+            );
+        }
+      }
+    });
 
     res.status(200).json({
       success: true,

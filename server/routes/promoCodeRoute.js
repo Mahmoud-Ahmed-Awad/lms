@@ -9,7 +9,7 @@ import {
 const promoCodeRouter = express.Router();
 
 promoCodeRouter.post("/generate", protectEducator, createPromoCode);
-promoCodeRouter.get("/get-all-codes", protectEducator, getAllPromoCodes);
+promoCodeRouter.get("/all", protectEducator, getAllPromoCodes);
 promoCodeRouter.post("/redeem", redeemCode);
 
 export default promoCodeRouter;
